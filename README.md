@@ -1,59 +1,252 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Backend API – Web Developer Intern Test
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**PT Aksamedia Mulia Digital**
 
-## About Laravel
+Backend API ini dibuat untuk memenuhi **Tugas 2 – Back End Web Developer Intern Test**.
+Aplikasi dibangun menggunakan **Laravel + Sanctum** dan menyediakan fitur autentikasi serta CRUD data karyawan dengan filter dan pagination.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Tech Stack
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+* Laravel
+* Laravel Sanctum (API Token Authentication)
+* MySQL / MariaDB
+* Eloquent ORM
+* Form Request Validation
+* Postman (testing API)
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Fitur
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+* Login & Logout menggunakan token (Sanctum)
+* Middleware proteksi endpoint sesuai soal
+* Get data divisions (filter + pagination)
+* CRUD data employees
+* Upload foto karyawan
+* Filter employee berdasarkan nama dan divisi
+* Pagination menggunakan pagination Laravel
+* Response API konsisten (`status`, `message`, `data`, `pagination`)
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Aturan Akses Endpoint
 
-### Premium Partners
+| Endpoint                 | Auth                          |
+| ------------------------ | ----------------------------- |
+| `POST /login`            | ❌ Hanya bisa saat belum login |
+| `GET /divisions`         | ✅ Wajib login                 |
+| `GET /employees`         | ✅ Wajib login                 |
+| `POST /employees`        | ✅ Wajib login                 |
+| `PUT /employees/{id}`    | ✅ Wajib login                 |
+| `DELETE /employees/{id}` | ✅ Wajib login                 |
+| `POST /logout`           | ✅ Wajib login                 |
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+---
 
-## Contributing
+## Akun Login (Seeder)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```json
+{
+  "username": "admin",
+  "password": "pastibisa"
+}
+```
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Autentikasi
 
-## Security Vulnerabilities
+API menggunakan **Laravel Sanctum (Bearer Token)**.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Header yang digunakan:
 
-## License
+```
+Authorization: Bearer {token}
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+## Dokumentasi API
+
+### 1. Login
+
+**POST** `/api/login`
+
+Request:
+
+```json
+{
+  "username": "admin",
+  "password": "pastibisa"
+}
+```
+
+Response sukses:
+
+```json
+{
+  "status": "success",
+  "message": "Login berhasil.",
+  "data": {
+    "token": "token_string",
+    "admin": {
+      "id": "uuid",
+      "name": "Admin",
+      "username": "admin",
+      "phone": "08xxxxxxxx",
+      "email": "admin@mail.com"
+    }
+  }
+}
+```
+
+---
+
+### 2. Get All Divisions
+
+**GET** `/api/divisions`
+
+Query (optional):
+
+```
+?name=Front
+```
+
+Response:
+
+```json
+{
+  "status": "success",
+  "message": "OK",
+  "data": {
+    "divisions": [
+      {
+        "id": "uuid",
+        "name": "Frontend"
+      }
+    ]
+  },
+  "pagination": {
+    "current_page": 1,
+    "total": 6
+  }
+}
+```
+
+---
+
+### 3. Get All Employees
+
+**GET** `/api/employees`
+
+Query:
+
+```
+?name=Agus&division_id=uuid
+```
+
+Response:
+
+```json
+{
+  "status": "success",
+  "message": "OK",
+  "data": {
+    "employees": [
+      {
+        "id": "uuid",
+        "image": "http://localhost/storage/employees/photo.jpg",
+        "name": "Agus",
+        "phone": "08xxxx",
+        "division": {
+          "id": "uuid",
+          "name": "Frontend"
+        },
+        "position": "Frontend Developer"
+      }
+    ]
+  },
+  "pagination": {
+    "current_page": 1,
+    "total": 10
+  }
+}
+```
+
+---
+
+### 4. Create Employee
+
+**POST** `/api/employees`
+
+Request (form-data):
+
+| Key      | Type |
+| -------- | ---- |
+| image    | file |
+| name     | text |
+| phone    | text |
+| division | uuid |
+| position | text |
+
+Response:
+
+```json
+{
+  "status": "success",
+  "message": "Berhasil menambahkan karyawan.",
+  "data": {}
+}
+```
+
+---
+
+### 5. Update Employee
+
+**PUT** `/api/employees/{id}`
+
+Request: sama seperti create.
+
+Response:
+
+```json
+{
+  "status": "success",
+  "message": "Berhasil memperbarui karyawan.",
+  "data": {}
+}
+```
+
+---
+
+### 6. Delete Employee
+
+**DELETE** `/api/employees/{id}`
+
+Response:
+
+```json
+{
+  "status": "success",
+  "message": "Berhasil menghapus karyawan.",
+  "data": {}
+}
+```
+
+---
+
+### 7. Logout
+
+**POST** `/api/logout`
+
+Response:
+
+```json
+{
+  "status": "success",
+  "message": "Logout berhasil.",
+  "data": {}
+}
+```
