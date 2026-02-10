@@ -22,8 +22,11 @@ class DivisionController extends Controller
 
         $divisions = $q->orderBy('name')->paginate(10)->withQueryString();
 
+        $pagination = $divisions->toArray();
+        unset($pagination['data']);
+
         return $this->ok('OK', [
             'divisions' => $divisions->items(),
-        ], $divisions->toArray());
+        ], $pagination);
     }
 }

@@ -21,9 +21,6 @@ class AuthController extends Controller
             return $this->fail('Username atau password salah.', 401);
         }
 
-        // optional biar 1 token aktif
-        $user->tokens()->delete();
-
         $token = $user->createToken('api-token')->plainTextToken;
 
         return $this->ok('Login berhasil.', [

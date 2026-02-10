@@ -29,7 +29,7 @@ class EmployeeController extends Controller
 
         $employees = $q->latest()->paginate(10)->withQueryString();
 
-        // mapping sesuai format soal + image jadi URL
+        // Mapping data agar bersih sesuai format
         $mapped = collect($employees->items())->map(function ($e) {
             $imageUrl = null;
             if ($e->image) {
@@ -50,10 +50,13 @@ class EmployeeController extends Controller
                 'position' => $e->position,
             ];
         })->values();
+        
+        $pagination = $employees->toArray();
+        unset($pagination['data']);
 
         return $this->ok('OK', [
             'employees' => $mapped,
-        ], $employees->toArray());
+        ], $pagination);
     }
 
     public function store(EmployeeStoreRequest $request)
